@@ -1,0 +1,19 @@
+# Build output
+**/target/
+
+# IDE metadata
+.idea/
+**/.settings/
+**/.classpath
+**/.project
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# Runtime hot-load directory (mounted as a volume at runtime)
+plugins/*.jar
+
+# OS
+.DS_Store

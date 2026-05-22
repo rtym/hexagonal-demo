@@ -4,19 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# ── IntelliJ IDEA ─────────────────────────────────────────────────────────────
-.idea/
-*.iml
-*.iws
-*.ipr
-out/
-
 # ── IDE project files (IntelliJ, VS Code, Eclipse/m2e, NetBeans) ──────────────
 .idea/
 *.iml
 *.iws
 *.ipr
-out/
+/out/
 .vscode/
 .classpath
 .project

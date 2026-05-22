@@ -1,22 +1,15 @@
-version: "3.8"
-
 services:
-  localstack:
-    image: localstack/localstack:3.4
-    container_name: hexdemo-localstack
+  app:
+    build: .
+    container_name: hexdemo-app
     ports:
-      - "4566:4566"
-    environment:
-      - SERVICES=sqs,dynamodb,s3
-      - DEFAULT_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=localstack
-      - AWS_SECRET_ACCESS_KEY=localstack
-      - DEBUG=0
+      - "8080:8080"
     volumes:
-      - "./localstack-init:/etc/localstack/init/ready.d"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      # Drop plugin JARs here at runtime for hot-loading
+      - ./plugins:/app/plugins
+      # Drop .txt files here to trigger the file adapter
+      - ./input:/app/input
+    environment:
+      INFRASTRUCTURE_PLUGINS_DIRECTORY: /app/plugins
+      ADAPTER_FILE_INPUT_DIR: /app/input
+      ADAPTER_FILE_POLLING_INTERVAL_MS: 5000
