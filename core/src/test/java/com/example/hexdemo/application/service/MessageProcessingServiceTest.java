@@ -102,6 +102,50 @@ class MessageProcessingServiceTest {
         assertThat(service.getAll()).isEmpty();
     }
 
+    @Test
+    void processMessage_propagates_file_source_to_processed_message() {
+        when(imageGeneratorPort.generateImage("carrot")).thenReturn(Optional.of("art"));
+
+        service.processMessage(new Message("id-1", "carrot", Message.MessageSource.FILE, Instant.now()));
+
+        ArgumentCaptor<ProcessedMessage> captor = ArgumentCaptor.forClass(ProcessedMessage.class);
+        verify(storagePort).save(captor.capture());
+        assertThat(captor.getValue().source()).isEqualTo(ProcessedMessage.MessageSource.FILE);
+    }
+
+    @Test
+    void processMessage_whitespace_only_content_stores_placeholder_for_empty_type() {
+        when(imageGeneratorPort.generateImage("")).thenReturn(Optional.empty());
+
+        service.processMessage(message("   "));
+
+        ArgumentCaptor<ProcessedMessage> captor = ArgumentCaptor.forClass(ProcessedMessage.class);
+        verify(storagePort).save(captor.capture());
+        assertThat(captor.getValue().messageType()).isEmpty();
+        assertThat(captor.getValue().asciiArt()).contains("No plugin for:");
+    }
+
+    @Test
+    void processMessage_placeholder_includes_plugin_retry_hint() {
+        when(imageGeneratorPort.generateImage("unknown")).thenReturn(Optional.empty());
+
+        service.processMessage(message("unknown"));
+
+        ArgumentCaptor<ProcessedMessage> captor = ArgumentCaptor.forClass(ProcessedMessage.class);
+        verify(storagePort).save(captor.capture());
+        assertThat(captor.getValue().asciiArt()).contains("plugins/");
+    }
+
+    @Test
+    void processMessage_calls_image_generator_exactly_once() {
+        when(imageGeneratorPort.generateImage("rabbit")).thenReturn(Optional.of("art"));
+
+        service.processMessage(message("rabbit"));
+
+        verify(imageGeneratorPort, times(1)).generateImage("rabbit");
+        verifyNoMoreInteractions(imageGeneratorPort);
+    }
+
     // ── helpers ────────────────────────────────────────────────────────────────
 
     private static Message message(String content) {
