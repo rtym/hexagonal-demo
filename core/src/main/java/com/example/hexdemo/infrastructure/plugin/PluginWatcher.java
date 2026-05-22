@@ -3,8 +3,7 @@ package com.example.hexdemo.infrastructure.plugin;
 import com.example.hexdemo.plugin.ImageGeneratorPlugin;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,10 +29,9 @@ import java.util.ServiceLoader;
  *
  * On startup, all existing JARs in the directory are loaded first.
  */
+@Slf4j
 @Component
 public class PluginWatcher {
-
-    private static final Logger log = LoggerFactory.getLogger(PluginWatcher.class);
 
     private final PluginRegistry pluginRegistry;
     private final Path pluginsDir;

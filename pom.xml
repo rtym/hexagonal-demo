@@ -28,7 +28,7 @@
         <java.version>21</java.version>
         <aws.sdk.version>2.25.69</aws.sdk.version>
         <!-- Override Spring Boot's managed Lombok to a version that supports Java 23+ -->
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <dependencyManagement>

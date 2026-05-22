@@ -2,8 +2,7 @@ package com.example.hexdemo.adapter.in.file;
 
 import com.example.hexdemo.application.port.in.ProcessMessageUseCase;
 import com.example.hexdemo.domain.model.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,10 +17,9 @@ import java.util.UUID;
  * Each non-blank line is treated as one message and forwarded to the use case.
  * Processed files are moved to input/processed/ to avoid duplicate handling.
  */
+@Slf4j
 @Component
 public class FileMessageAdapter {
-
-    private static final Logger log = LoggerFactory.getLogger(FileMessageAdapter.class);
 
     private final ProcessMessageUseCase processMessageUseCase;
     private final Path inputDir;

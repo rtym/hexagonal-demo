@@ -2,8 +2,7 @@ package com.example.hexdemo.infrastructure.plugin;
 
 import com.example.hexdemo.application.port.out.ImageGeneratorPort;
 import com.example.hexdemo.plugin.ImageGeneratorPlugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -21,10 +20,9 @@ import java.util.concurrent.ConcurrentMap;
  * The registry maps each supported message type directly to its plugin instance so
  * look-up is O(1) regardless of how many plugins are loaded.
  */
+@Slf4j
 @Component
 public class PluginRegistry implements ImageGeneratorPort {
-
-    private static final Logger log = LoggerFactory.getLogger(PluginRegistry.class);
 
     private final ConcurrentMap<String, ImageGeneratorPlugin> byType = new ConcurrentHashMap<>();
 

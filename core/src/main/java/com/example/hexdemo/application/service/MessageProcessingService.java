@@ -6,8 +6,7 @@ import com.example.hexdemo.application.port.out.ImageGeneratorPort;
 import com.example.hexdemo.application.port.out.MessageStoragePort;
 import com.example.hexdemo.domain.model.Message;
 import com.example.hexdemo.domain.model.ProcessedMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -19,10 +18,9 @@ import java.util.List;
  * Dependencies are injected via ports (interfaces only); this class knows nothing
  * about DynamoDB, AWS SQS, files, or how plugins are loaded.
  */
+@Slf4j
 @Service
 public class MessageProcessingService implements ProcessMessageUseCase, GetProcessedMessagesQuery {
-
-    private static final Logger log = LoggerFactory.getLogger(MessageProcessingService.class);
 
     private final ImageGeneratorPort imageGeneratorPort;
     private final MessageStoragePort storagePort;
