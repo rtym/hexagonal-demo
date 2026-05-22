@@ -1,5 +1,5 @@
 # ── Build stage ───────────────────────────────────────────────────────────────
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /workspace
 
 COPY pom.xml .
@@ -17,7 +17,7 @@ COPY plugin-bundle/src plugin-bundle/src
 RUN mvn package -DskipTests -pl core -am
 
 # ── Runtime stage ─────────────────────────────────────────────────────────────
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 COPY --from=build /workspace/core/target/core-*.jar app.jar
