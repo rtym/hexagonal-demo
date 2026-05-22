@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: hexagonal-demo
+
+server:
+  port: 8080
+
+# AWS / LocalStack
+aws:
+  region: us-east-1
+  endpoint-override: http://localhost:4566   # remove for real AWS
+
+# Adapters
+adapter:
+  file:
+    input-dir: ./input
+    polling-interval-ms: 10000              # scan every 10 s
+
+  sqs:
+    queue-url: http://localhost:4566/000000000000/messages-queue
+    polling-interval-ms: 5000              # poll every 5 s
+
+  dynamodb:
+    table-name: processed-messages
+
+# Infrastructure
+infrastructure:
+  plugins:
+    directory: ./plugins                    # drop JARs here for hot-loading
+
+logging:
+  level:
+    com.example.hexdemo: DEBUG

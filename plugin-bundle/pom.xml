@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.example.hexdemo</groupId>
+        <artifactId>hexagonal-demo-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>plugin-bundle</artifactId>
+    <name>Hexagonal Demo — Plugin Bundle</name>
+    <description>
+        Single JAR containing all three image-generator plugins (carrot, rabbit, cabbage).
+        Two versions are produced via Maven profiles:
+          -Pbundle-v1  →  plugin-bundle-v1.jar  (original ASCII art)
+          -Pbundle-v2  →  plugin-bundle-v2.jar  (enhanced ASCII art, used for hot-swap demo)
+        The default build (no explicit profile) produces v1.
+    </description>
+
+    <dependencies>
+        <!-- provided: the interface lives in the host application's classloader -->
+        <dependency>
+            <groupId>com.example.hexdemo</groupId>
+            <artifactId>plugin-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- SLF4J API — provided by the host application's classloader at runtime -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Profile bundle-v1 (default) — original ASCII art
+         Produces: plugin-bundle-v1.jar
+         ═══════════════════════════════════════════════════════════════════ -->
+    <profiles>
+        <profile>
+            <id>bundle-v1</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <finalName>plugin-bundle-v1</finalName>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources-v1</directory>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             Profile bundle-v2 — enhanced ASCII art (hot-swap target)
+             Produces: plugin-bundle-v2.jar
+             Build with: mvn package -DskipTests -Pbundle-v2
+             ═══════════════════════════════════════════════════════════════ -->
+        <profile>
+            <id>bundle-v2</id>
+            <build>
+                <finalName>plugin-bundle-v2</finalName>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources-v2</directory>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
+</project>

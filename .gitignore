@@ -1,0 +1,53 @@
+# ── Maven ─────────────────────────────────────────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ── IntelliJ IDEA ─────────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ── IDE project files (IntelliJ, VS Code, Eclipse/m2e, NetBeans) ──────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+.apt_generated/
+.springBeans
+nbproject/
+nb-configuration.xml
+
+# ── Lombok ────────────────────────────────────────────────────────────────────
+lombok.config
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Windows ───────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── Application runtime artefacts ─────────────────────────────────────────────
+plugins/*.jar
+input/processed/
+*.log
+logs/
+
+# ── Secrets / environment ─────────────────────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key

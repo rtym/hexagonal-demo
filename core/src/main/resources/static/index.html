@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexagonal Architecture Demo</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --border: #2e3147;
+            --accent: #6c63ff;
+            --accent2: #00d4aa;
+            --text: #e2e4f0;
+            --muted: #6b7280;
+            --carrot: #ff7d29;
+            --rabbit: #a78bfa;
+            --cabbage: #34d399;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-hex {
+            width: 36px; height: 36px;
+            background: var(--accent);
+            clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+        }
+
+        h1 { font-size: 1.25rem; font-weight: 600; }
+        h1 span { color: var(--accent); }
+
+        .badge {
+            font-size: 0.7rem;
+            background: var(--border);
+            padding: 2px 8px;
+            border-radius: 999px;
+            color: var(--muted);
+            margin-left: 0.5rem;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            display: inline-block;
+        }
+        .dot.ok { background: var(--accent2); }
+
+        main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        .controls {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .controls label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        select, input[type=text] {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        select:focus, input[type=text]:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: opacity 0.15s;
+        }
+
+        button:hover { opacity: 0.85; }
+        button:disabled { opacity: 0.4; cursor: default; }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: border-color 0.15s;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .card:hover { border-color: var(--accent); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .type-badge {
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+
+        .type-carrot  { background: rgba(255,125,41,0.15);  color: var(--carrot); }
+        .type-rabbit  { background: rgba(167,139,250,0.15); color: var(--rabbit); }
+        .type-cabbage { background: rgba(52,211,153,0.15);  color: var(--cabbage);}
+        .type-unknown { background: rgba(107,114,128,0.15); color: var(--muted); }
+
+        .source-badge {
+            font-size: 0.7rem;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        pre {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: var(--accent2);
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .card-footer {
+            margin-top: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--muted);
+        }
+
+        .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+        .plugins-info {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+        }
+
+        .plugins-info h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .plugin-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+        .plugin-chip {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 3px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            color: var(--accent2);
+        }
+
+        .no-plugins { color: var(--muted); font-style: italic; }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem; right: 1.5rem;
+            background: var(--accent);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .toast.show { opacity: 1; }
+
+        .arch-diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: var(--muted);
+            white-space: pre;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-hex"></div>
+        <div>
+            <h1>Hexagonal Architecture <span>Demo</span></h1>
+        </div>
+    </div>
+    <div class="status-bar">
+        <span><span class="dot" id="api-dot"></span> API</span>
+        <span id="plugin-count">0 plugins</span>
+        <span id="last-refresh">–</span>
+        <button class="btn-secondary" onclick="refresh()" style="padding:0.3rem 0.75rem;font-size:0.8rem">Refresh</button>
+    </div>
+</header>
+
+<main>
+
+    <!-- Architecture quick-reference -->
+    <div class="arch-diagram" id="arch-toggle">
+┌──────────────────── HEXAGONAL ARCHITECTURE ─────────────────────────────────┐
+│                                                                               │
+│  DRIVING (in) ADAPTERS          APPLICATION CORE         DRIVEN (out)        │
+│                                                           ADAPTERS            │
+│  ┌─────────────┐                ┌───────────────┐                            │
+│  │ File Adapter│──────────────▶│  Process      │                            │
+│  └─────────────┘                │  Message      │──────▶ ┌──────────────┐   │
+│                                 │  Use Case     │        │  DynamoDB    │   │
+│  ┌─────────────┐                │               │        │  Adapter     │   │
+│  │ SQS Adapter │──────────────▶│  ────────────  │        └──────────────┘   │
+│  └─────────────┘                │               │                            │
+│                                 │  Image        │──────▶ ┌──────────────┐   │
+│  ┌─────────────┐                │  Generator    │        │ Plugin       │   │
+│  │ REST Adapter│──────────────▶│  Port         │        │ Registry     │   │
+│  │  (this UI)  │◀──────────────│               │        │ (hot-load)   │   │
+│  └─────────────┘                └───────────────┘        └──────────────┘   │
+│                                        ▲                        ▲            │
+│                                  ports (interfaces)       plugins/*.jar      │
+└───────────────────────────────────────────────────────────────────────────── ┘
+    </div>
+
+    <!-- Plugin status -->
+    <div class="plugins-info">
+        <h3>Loaded Plugins</h3>
+        <div class="plugin-chips" id="plugin-chips">
+            <span class="no-plugins">Loading…</span>
+        </div>
+    </div>
+
+    <!-- Send message controls -->
+    <div class="controls">
+        <label for="msg-type">Send message:</label>
+        <select id="msg-type">
+            <option value="carrot">carrot</option>
+            <option value="rabbit">rabbit</option>
+            <option value="cabbage">cabbage</option>
+        </select>
+        <button onclick="sendMessage()">Send</button>
+        <label for="custom-msg">Custom:</label>
+        <input type="text" id="custom-msg" placeholder="type any word…" style="width:160px">
+        <button onclick="sendCustom()">Send Custom</button>
+    </div>
+
+    <!-- Results grid -->
+    <div class="section-header">
+        <h2>Processed Messages <span class="badge" id="msg-count">0</span></h2>
+    </div>
+    <div class="grid" id="messages-grid">
+        <div class="empty-state">
+            <div class="icon">📭</div>
+            <div>No messages yet — send one above or drop a .txt file into the input/ directory.</div>
+        </div>
+    </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // Change this to your Spring Boot host if deploying the frontend to a different origin
+    const API_BASE = 'http://localhost:8080/api';
+    const POLL_INTERVAL_MS = 4000;
+
+    let lastMessageIds = new Set();
+
+    function typeBadge(type) {
+        const cls = ['carrot','rabbit','cabbage'].includes(type)
+            ? `type-${type}` : 'type-unknown';
+        return `<span class="type-badge ${cls}">${type}</span>`;
+    }
+
+    function formatTime(iso) {
+        try {
+            return new Date(iso).toLocaleTimeString();
+        } catch { return iso; }
+    }
+
+    async function refresh() {
+        await Promise.all([fetchMessages(), fetchPlugins()]);
+        document.getElementById('last-refresh').textContent =
+            'Updated ' + new Date().toLocaleTimeString();
+    }
+
+    async function fetchMessages() {
+        try {
+            const res = await fetch(`${API_BASE}/messages`);
+            if (!res.ok) throw new Error(res.status);
+            document.getElementById('api-dot').classList.add('ok');
+            const data = await res.json();
+            renderMessages(data);
+        } catch (e) {
+            document.getElementById('api-dot').classList.remove('ok');
+            console.warn('API unreachable:', e.message);
+        }
+    }
+
+    async function fetchPlugins() {
+        try {
+            const res = await fetch(`${API_BASE}/plugins`);
+            if (!res.ok) return;
+            const data = await res.json();
+            const chips = document.getElementById('plugin-chips');
+            const types = data.supportedTypes || [];
+            document.getElementById('plugin-count').textContent =
+                `${data.loaded ?? 0} plugin${data.loaded !== 1 ? 's' : ''}`;
+            if (types.length === 0) {
+                chips.innerHTML = '<span class="no-plugins">No plugins loaded — build & copy plugin JARs to plugins/</span>';
+            } else {
+                chips.innerHTML = types.map(t =>
+                    `<span class="plugin-chip">${t}</span>`).join('');
+            }
+        } catch (e) {
+            console.warn('Plugin fetch failed:', e.message);
+        }
+    }
+
+    function renderMessages(messages) {
+        const grid = document.getElementById('messages-grid');
+        const countEl = document.getElementById('msg-count');
+        countEl.textContent = messages.length;
+
+        if (messages.length === 0) {
+            grid.innerHTML = `<div class="empty-state">
+                <div class="icon">📭</div>
+                <div>No messages yet — send one above or drop a .txt file into input/</div>
+            </div>`;
+            return;
+        }
+
+        // Detect new messages for animation re-trigger
+        const newIds = new Set(messages.map(m => m.id));
+        const hasNew = [...newIds].some(id => !lastMessageIds.has(id));
+        lastMessageIds = newIds;
+
+        grid.innerHTML = messages.map(msg => `
+            <div class="card">
+                <div class="card-header">
+                    ${typeBadge(msg.messageType)}
+                    <span class="source-badge">${msg.source || 'UNKNOWN'}</span>
+                </div>
+                <pre>${escapeHtml(msg.asciiArt || '')}</pre>
+                <div class="card-footer">
+                    <span>${msg.id.substring(0, 8)}…</span>
+                    <span>${formatTime(msg.processedAt)}</span>
+                </div>
+            </div>
+        `).join('');
+
+        if (hasNew) showToast('New message processed!');
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    async function sendMessage() {
+        const type = document.getElementById('msg-type').value;
+        await post(type);
+    }
+
+    async function sendCustom() {
+        const val = document.getElementById('custom-msg').value.trim();
+        if (!val) return;
+        await post(val);
+        document.getElementById('custom-msg').value = '';
+    }
+
+    async function post(content) {
+        try {
+            const res = await fetch(`${API_BASE}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: content
+            });
+            if (!res.ok) throw new Error(res.status);
+            showToast(`Sent: "${content}"`);
+            setTimeout(refresh, 800);
+        } catch (e) {
+            showToast('Send failed — is the API running?');
+        }
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // Bootstrap
+    refresh();
+    setInterval(refresh, POLL_INTERVAL_MS);
+</script>
+</body>
+</html>

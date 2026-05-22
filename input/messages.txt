@@ -1,0 +1,9 @@
+
+# Lines starting with # are ignored.
+# Drop this file (or any *.txt) into the input/ directory and the File adapter
+# will pick it up, process each line, and move the file to input/processed/.
+carrot
+rabbit
+cabbage
+carrot
+rabbit
