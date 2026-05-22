@@ -5,6 +5,7 @@ import com.example.hexdemo.application.port.in.ProcessMessageUseCase;
 import com.example.hexdemo.application.port.out.ImageGeneratorPort;
 import com.example.hexdemo.domain.model.Message;
 import com.example.hexdemo.domain.model.ProcessedMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
  *   POST /api/messages          → submit a message manually (demo / testing)
  *   GET  /api/plugins           → list currently loaded plugins (observability)
  */
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
@@ -28,14 +30,6 @@ public class MessageController {
     private final ProcessMessageUseCase processMessageUseCase;
     private final GetProcessedMessagesQuery getProcessedMessagesQuery;
     private final ImageGeneratorPort imageGeneratorPort;
-
-    public MessageController(ProcessMessageUseCase processMessageUseCase,
-                             GetProcessedMessagesQuery getProcessedMessagesQuery,
-                             ImageGeneratorPort imageGeneratorPort) {
-        this.processMessageUseCase = processMessageUseCase;
-        this.getProcessedMessagesQuery = getProcessedMessagesQuery;
-        this.imageGeneratorPort = imageGeneratorPort;
-    }
 
     @GetMapping("/messages")
     public List<ProcessedMessage> getMessages() {

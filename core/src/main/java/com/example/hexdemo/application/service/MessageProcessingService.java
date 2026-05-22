@@ -6,6 +6,7 @@ import com.example.hexdemo.application.port.out.ImageGeneratorPort;
 import com.example.hexdemo.application.port.out.MessageStoragePort;
 import com.example.hexdemo.domain.model.Message;
 import com.example.hexdemo.domain.model.ProcessedMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +20,12 @@ import java.util.List;
  * about DynamoDB, AWS SQS, files, or how plugins are loaded.
  */
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class MessageProcessingService implements ProcessMessageUseCase, GetProcessedMessagesQuery {
 
     private final ImageGeneratorPort imageGeneratorPort;
     private final MessageStoragePort storagePort;
-
-    public MessageProcessingService(ImageGeneratorPort imageGeneratorPort,
-                                    MessageStoragePort storagePort) {
-        this.imageGeneratorPort = imageGeneratorPort;
-        this.storagePort = storagePort;
-    }
 
     @Override
     public void processMessage(Message message) {
